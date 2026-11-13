@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: biot-inventory-backend
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm run start:prod
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: AWID
+        value: 0123456789abcdef0123456789abcdef
+      - key: MONGODB_URI
+        sync: false

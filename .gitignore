@@ -3,3 +3,13 @@ dist/
 .env
 data/
 *.tsbuildinfo
+
+# Python IoT simulator & gateway SQLite queue
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.db
+*.db-wal
+*.db-shm
+

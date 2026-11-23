@@ -96,3 +96,11 @@ npm run dev
 
 1. **Free Database (`MongoDB Atlas M0`)**: Create a free 512 MB cluster at [mongodb.com/atlas](https://www.mongodb.com/atlas) (no credit card required) and copy the connection string into `MONGODB_URI`.
 2. **Free Web Service (`Render.com`)**: Connect this GitHub repository on [render.com](https://render.com) (automatically uses `render.yaml`) and set `MONGODB_URI` in the Environment settings.
+
+---
+
+## IoT Part (`Základní implementace IoT části – IoT node, gateway`)
+
+The `iot/` directory contains a runnable Python + MQTT implementation of the simulated **IoT Weighing Node (`UZ-001`)** and **IoT Gateway (`BR-001`)** with an SQLite store-and-forward retention queue connected directly to the NestJS backend (`POST /measurement/ingest`).
+
+See [`iot/README.md`](./iot/README.md) for setup, architecture, and running instructions.

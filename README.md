@@ -95,7 +95,9 @@ npm run dev
 ## Free Cloud Deployment (0 Kč – MongoDB Atlas M0 + Render.com)
 
 1. **Free Database (`MongoDB Atlas M0`)**: Create a free 512 MB cluster at [mongodb.com/atlas](https://www.mongodb.com/atlas) (no credit card required) and copy the connection string into `MONGODB_URI`.
-2. **Free Web Service (`Render.com`)**: Connect this GitHub repository on [render.com](https://render.com) (automatically uses `render.yaml`) and set `MONGODB_URI` in the Environment settings.
+2. **Free Web Service (`Render.com`)**: Connect this GitHub repository on [render.com](https://render.com) (automatically uses `render.yaml`, exposes `/health`, and auto-seeds an empty MongoDB database when `SEED_ON_EMPTY=true`) and set `MONGODB_URI` in the Environment settings.
+
+See [`DEPLOYMENT.md`](./DEPLOYMENT.md) for the complete step-by-step cloud deployment and IoT Gateway cloud connection guide.
 
 ---
 

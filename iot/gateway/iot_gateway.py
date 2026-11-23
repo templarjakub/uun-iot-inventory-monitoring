@@ -373,6 +373,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--broker-host", default="127.0.0.1", help="Local MQTT broker host")
     parser.add_argument("--broker-port", type=int, default=1883, help="Local MQTT broker port")
     parser.add_argument("--backend-url", default="http://127.0.0.1:3000", help="BIOT NestJS backend base URL")
+    parser.add_argument("--backend-timeout", type=float, default=15.0, help="HTTP timeout in seconds (increase for Render cold starts)")
     parser.add_argument("--db-path", default="biot_gateway_queue.db", help="SQLite retention queue DB path")
     parser.add_argument("--forward-interval", type=float, default=1.0, help="Queue poll interval (s)")
     parser.add_argument("--retry-backoff", type=float, default=2.0, help="Retry delay after backend outage (s)")
@@ -394,7 +395,7 @@ def main() -> None:
         gateway_id=args.gateway_id,
         gateway_name=args.gateway_name,
         mqtt_config=MQTTConfig(host=args.broker_host, port=args.broker_port),
-        backend_config=BackendConfig(base_url=args.backend_url),
+        backend_config=BackendConfig(base_url=args.backend_url, timeout_s=args.backend_timeout),
         db_path=args.db_path,
         forward_interval_s=args.forward_interval,
         retry_backoff_s=args.retry_backoff,

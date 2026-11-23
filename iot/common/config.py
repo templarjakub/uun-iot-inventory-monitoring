@@ -22,7 +22,7 @@ class BackendConfig:
     """HTTP settings for the BIOT NestJS uuApp Cloud Backend."""
 
     base_url: str = os.getenv("BACKEND_URL", "http://127.0.0.1:3000").rstrip("/")
-    timeout_s: float = float(os.getenv("BACKEND_TIMEOUT_S", "5.0"))
+    timeout_s: float = float(os.getenv("BACKEND_TIMEOUT_S", "15.0"))
     gateway_profile: str = os.getenv("BACKEND_GATEWAY_PROFILE", "Gateways")
     authority_profile: str = os.getenv("BACKEND_AUTHORITY_PROFILE", "Authorities")
 

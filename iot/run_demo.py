@@ -195,12 +195,24 @@ def main() -> None:
     )
     parser = argparse.ArgumentParser(description="Run BIOT IoT Node + Gateway demo against NestJS backend.")
     parser.add_argument("--backend-url", default="http://127.0.0.1:3000", help="BIOT NestJS backend URL")
+    parser.add_argument("--backend-timeout", type=float, default=30.0, help="HTTP timeout in seconds (handles cloud cold starts)")
     parser.add_argument("--broker-port", type=int, default=0, help="Local MQTT port (0 = auto)")
     parser.add_argument("--interactive", action="store_true", help="Run interactive REPL for live presentations")
     args = parser.parse_args()
 
-    backend_cfg = BackendConfig(base_url=args.backend_url)
+    backend_cfg = BackendConfig(base_url=args.backend_url, timeout_s=args.backend_timeout)
     backend_client = BiotBackendClient(backend_cfg)
+
+    logger.info("Checking backend health at %s/health ...", backend_cfg.base_url)
+    try:
+        health = backend_client.wait_for_health(max_wait_s=max(10.0, args.backend_timeout))
+        logger.info(
+            "Backend healthy: status=%s storage=%s",
+            health.get("status"),
+            health.get("storage"),
+        )
+    except BackendError as exc:
+        logger.warning("Backend health check failed (%s); measurements will buffer in SQLite until reachable.", exc)
 
     broker = ThreadedMQTTBroker(host="127.0.0.1", port=args.broker_port)
     broker.start()

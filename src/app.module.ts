@@ -8,6 +8,7 @@ import { ProductModule } from "./modules/product/product.module";
 import { WeighingPointModule } from "./modules/weighing-point/weighing-point.module";
 import { IotModule } from "./modules/iot/iot.module";
 import { MeasurementModule } from "./modules/measurement/measurement.module";
+import { HealthController } from "./health.controller";
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { MeasurementModule } from "./modules/measurement/measurement.module";
     IotModule,
     MeasurementModule
   ],
+  controllers: [HealthController],
   providers: [
     {
       provide: APP_GUARD,

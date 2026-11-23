@@ -22,6 +22,12 @@ async function runTests() {
     return { statusCode: res.status, json };
   }
 
+  // 0. Health check (cloud deployment readiness)
+  const resHealth = await callCommand("GET", "/health");
+  assert.strictEqual(resHealth.statusCode, 200, "/health should return 200");
+  assert.strictEqual(resHealth.json.status, "ok", "/health status should be ok");
+  console.log(`✅ 0. /health -> status=${resHealth.json.status}, storage=${resHealth.json.storage}`);
+
   // 1. product/create (BUC-01)
   const res1 = await callCommand("POST", "/product/create", {
     productName: "Podložka pérová M8"

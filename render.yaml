@@ -3,14 +3,17 @@ services:
     name: biot-inventory-backend
     runtime: node
     plan: free
-    buildCommand: npm install && npm run build
+    buildCommand: npm ci --include=dev && npm run build
     startCommand: npm run start:prod
+    healthCheckPath: /health
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PORT
-        value: 3000
       - key: AWID
         value: 0123456789abcdef0123456789abcdef
+      - key: STALE_THRESHOLD_MINUTES
+        value: "60"
+      - key: SEED_ON_EMPTY
+        value: "true"
       - key: MONGODB_URI
         sync: false

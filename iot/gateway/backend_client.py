@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -116,3 +117,19 @@ class BiotBackendClient:
         if product_id:
             path += f"?productId={urllib.parse.quote(product_id)}"
         return self._request("GET", path, "Readers")
+
+    def check_health(self) -> dict[str, Any]:
+        """GET /health — verify cloud backend readiness and storage mode."""
+        return self._request("GET", "/health", "Readers")
+
+    def wait_for_health(self, max_wait_s: float = 60.0, poll_interval_s: float = 2.0) -> dict[str, Any]:
+        """Poll GET /health until backend responds (handles Render free-tier cold starts)."""
+        deadline = time.monotonic() + max_wait_s
+        last_err: Exception | None = None
+        while time.monotonic() < deadline:
+            try:
+                return self.check_health()
+            except RetryableBackendError as exc:
+                last_err = exc
+                time.sleep(poll_interval_s)
+        raise RetryableBackendError(f"Backend at {self.config.base_url} did not become healthy: {last_err}")

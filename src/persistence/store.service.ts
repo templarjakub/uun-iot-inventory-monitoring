@@ -175,11 +175,46 @@ export class StoreService implements OnModuleInit {
     };
   }
 
+  getStorageInfo(): { mode: "mongodb" | "local-json"; connected: boolean } {
+    return {
+      mode: this.isMongoConnected ? "mongodb" : "local-json",
+      connected: this.isMongoConnected ? mongoose.connection.readyState === 1 : true
+    };
+  }
+
+  private async seedMongoIfEmpty(): Promise<void> {
+    if (!env.SEED_ON_EMPTY) {
+      return;
+    }
+
+    const [productCount, gatewayCount] = await Promise.all([
+      this.models.product.countDocuments().exec(),
+      this.models.iotGateway.countDocuments().exec()
+    ]);
+
+    if (productCount > 0 || gatewayCount > 0) {
+      return;
+    }
+
+    const seed = getInitialSeedState();
+    await Promise.all([
+      this.models.product.insertMany(seed.product),
+      this.models.iotGateway.insertMany(seed.iotGateway),
+      this.models.iotNode.insertMany(seed.iotNode),
+      this.models.weighingPoint.insertMany(seed.weighingPoint),
+      this.models.measurement.insertMany(seed.measurement)
+    ]);
+    console.log(
+      "🌱 Seeded empty MongoDB database with initial BIOT demo data (PRD-001..003, BR-001, UZ-001, VM-001..002)"
+    );
+  }
+
   async onModuleInit(): Promise<void> {
     if (env.MONGODB_URI) {
       await mongoose.connect(env.MONGODB_URI);
       this.isMongoConnected = true;
       console.log("✅ Connected to MongoDB Atlas via Mongoose (@nestjs/mongoose schemas)");
+      await this.seedMongoIfEmpty();
       return;
     }
 

@@ -45,6 +45,29 @@ class _MockBiotBackend:
             def log_message(self, format: str, *args: Any) -> None:  # noqa: A002
                 return
 
+            def do_GET(self) -> None:  # noqa: N802
+                with backend._lock:
+                    if not backend.online:
+                        self.send_response(503)
+                        self.end_headers()
+                        return
+                    if self.path == "/health":
+                        out = json.dumps(
+                            {
+                                "status": "ok",
+                                "service": "biot-inventory-backend",
+                                "storage": "mongodb",
+                                "connected": True,
+                            }
+                        ).encode("utf-8")
+                        self.send_response(200)
+                        self.send_header("Content-Type", "application/json")
+                        self.end_headers()
+                        self.wfile.write(out)
+                        return
+                self.send_response(404)
+                self.end_headers()
+
             def do_POST(self) -> None:  # noqa: N802
                 length = int(self.headers.get("Content-Length", "0"))
                 raw = self.rfile.read(length).decode("utf-8")
@@ -227,6 +250,10 @@ def test_end_to_end_mqtt_gateway_to_backend_with_outage_recovery(tmp_path: Path)
     )
 
     try:
+        health = gateway.backend.check_health()
+        assert health["status"] == "ok"
+        assert health["storage"] == "mongodb"
+
         gateway.start()
         assert node.connect()
 
